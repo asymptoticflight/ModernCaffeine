@@ -1,0 +1,167 @@
+{
+    "versionLabel": "1.0.0",
+    "uuid": "C406E47C-733E-435B-9008-47A9021724E1",
+    "longName": "Modern Caffeine",
+    "versionCode": 1,
+    "capabilities": [
+        "configurable"
+    ],
+	"appKeys": {
+			"updownlong": 0,
+			"updowndouble": 1,
+			"centerlong": 2,
+			"centerdouble": 3,
+			"halflife": 4
+	},
+	"preferences": {
+			"embedded": false,
+			"debug": false,
+			"url" : "http://asymptoticflight.github.io/ModernCaffeine/autoconfig.html",
+			"description": "Customize caffeine content to be registered by each button combination on your Pebble below (e.g., cup of coffee = 95mg, double espresso = 150mg, diet coke = 35mg).",
+			"items": [{
+					"name": "updownlong",
+					"title": "Pebble up/down long press (up to increase, down to decrease)",
+					"description": "Enter caffeine content in mg:",
+					"type": "integer",
+					"min": 1,
+					"max": 500,
+					"default": 100
+			},
+			{
+					"name": "updowndouble",
+					"title": "Pebble up/down double-press (up to increase, down to decrease)",
+					"description": "Enter caffeine content in mg:",
+					"type": "integer",
+					"min": 1,
+					"max": 500,
+					"default": 50
+			},			
+			{
+					"name": "centerlong",
+					"title": "Pebble center button - long press (increase)",
+					"description": "Enter caffeine content in mg:",
+					"type": "integer",
+					"min": 1,
+					"max": 500,
+					"default": 150
+			},
+			{
+					"name": "centerdouble",
+					"title": "Pebble center button - double-press (increase)",
+					"description": "Enter caffeine content in mg:",
+					"type": "integer",
+					"min": 1,
+					"max": 500,
+					"default": 200
+			},
+			{
+					"name": "halflife",
+					"title": "ADVANCED: adjust caffeine half-life for your metabolism (if needed)",
+					"description": "The default value of 300 min. is best for most people, but you may increase this if you metabolise caffeine more slowly than average (caffeine stays in your system longer), or decrease slightly if you metabolise more quickly. Enter half-life in minutes:",
+					"type": "integer",
+					"min": 240,
+					"max": 600,
+					"default": 300
+			}]
+	},
+    "shortName": "Modern Caffeine",
+    "companyName": "asymptoticflight",
+    "watchapp": {
+        "watchface": false
+    },
+    "resources": {
+        "media": [
+            {
+                "type": "png",
+                "name": "BLUETOOTH_CONNECTED",
+                "file": "images/bluetooth.png"
+            },
+            {
+                "type": "png",
+                "name": "IMAGE_BACKGROUND_BADGE",
+                "file": "images/modern_background_new.png"
+            },
+            {
+                "menuIcon": true,
+                "type": "png",
+                "name": "IMAGE_MENU_ICON",
+                "file": "images/modern_logo.png"
+            },
+            {
+                "type": "png",
+                "name": "BLUETOOTH_DISCONNECTED",
+                "file": "images/Icon Bluetooth disconnected.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_CHARGING",
+                "file": "images/Icon Battery Charging.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_100",
+                "file": "images/Icon Battery 100.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_90",
+                "file": "images/Icon Battery 90.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_80",
+                "file": "images/Icon Battery 80.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_70",
+                "file": "images/Icon Battery 70.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_60",
+                "file": "images/Icon Battery 60.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_50",
+                "file": "images/Icon Battery 50.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_40",
+                "file": "images/Icon Battery 40.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_30",
+                "file": "images/Icon Battery 30.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_20",
+                "file": "images/Icon Battery 20.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_BATTERY_10",
+                "file": "images/Icon Battery 10.png"
+            },
+            {
+                "type": "png",
+                "name": "IMAGE_DATE_WINDOW",
+                "file": "images/Date Window.png"
+            },
+            {
+                "type": "font",
+                "name": "FONT_ROBOTO_CONDENSED_21",
+                "file": "fonts/Roboto-Condensed.ttf"
+            },
+            {
+                "type": "png",
+                "name": "IMAGE_BACKGROUND_NOBADGE",
+                "file": "images/modern minimal 3 background no badge.png"
+            }
+        ]
+    }
+}
