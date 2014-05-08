@@ -56,8 +56,8 @@
 			},
 			{
 					"name": "halflife",
-					"title": "ADVANCED: adjust caffeine half-life for your metabolism (if needed)",
-					"description": "The default value of 300 min. is best for most people, but you may increase this if you metabolise caffeine more slowly than average (caffeine stays in your system longer), or decrease slightly if you metabolise more quickly. Enter half-life in minutes:",
+					"title": "Advanced: adjust caffeine half-life for your metabolism (if needed)",
+					"description": "The default value of 300 min. (5 hrs.) is best for most people, but you may increase this if you metabolise caffeine more slowly than average (caffeine stays in your system longer), or decrease slightly if you metabolise more quickly. Enter half-life in minutes:",
 					"type": "integer",
 					"min": 240,
 					"max": 600,
