@@ -49,38 +49,36 @@ static char date_text[] = "13";
 // Caffeine Text
 static TextLayer *caff_layer;
 static char caff_text[] = "150";
-static float caff_init=350.0;
-//static float caff_time;
-static float caff_time0=1397412233;
-//double timer_s;
-//float caff_init;
-//float caff_time;
+static float caff_init=0;
+static int caff_time0=1397412233;
 struct CaffState {
-	float caff_time0;
+	int caff_time0;
 	float caff_init;
 } __attribute__((__packed__));
 
 /////
 /// Calculate current caffeine level ///
 /////
-	//float caff_now(float caff_init,float caff_time) {
 	float caff_now() {
-		//int i;
-		int i=2;
-		//float work=i;
-		float error=0.01;
 		time_t now1 = time(NULL);
-		double timer_s=now1;
-		float x=-(timer_s-caff_time0)/(halflife*86.5617);
+		int timer_s=now1;
+		float x=-(timer_s-caff_time0)/(halflife*86.56170245);
 		float term=x;
-		float answer=x;
-
-		while (term > error || term < -error)
-		{
-			float work = i;
-			term =  (term * x)/work;
-			answer = answer + (term);
-			i++;
+		float answer=x;		
+		if (timer_s-caff_time0<172800) {
+			int i=2;
+			float error=0.001;				
+			while (term > error || term < -error)
+			{
+				int work = i;
+				term =  (term * x)/work;
+				answer = answer + (term);
+				i++;
+			}
+		}
+		else {
+			caff_init=0;
+			caff_time0=timer_s;
 		}
 
 		answer = answer + 1.0;
@@ -171,7 +169,6 @@ void draw_date() {
 ////
 
 void draw_caff() {
-  //snprintf(caff_text, sizeof(caff_text), "%d", (int)(caff_now(caff_init,caff_time)));
   snprintf(caff_text, sizeof(caff_text), "%d", (int)(caff_now()));
 	text_layer_set_text(caff_layer, caff_text);
 }
@@ -270,7 +267,7 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 //caff_init = caff_now(caff_init,caff_time)+10;
 caff_init = caff_now()+10;
 time_t now2 = time(NULL);
-double timer_s2=now2;
+int timer_s2=now2;
 caff_time0 = timer_s2;
 draw_caff();
 show_status();
@@ -279,7 +276,7 @@ show_status();
 static void up_long_click_handler(ClickRecognizerRef recognizer, void *context) {
 caff_init = caff_now()+updownlong;
 time_t now2 = time(NULL);
-double timer_s2=now2;
+int timer_s2=now2;
 caff_time0 = timer_s2;
 draw_caff();
 show_status();
@@ -288,7 +285,7 @@ show_status();
 static void up_double_click_handler(ClickRecognizerRef recognizer, void *context) {
 caff_init = caff_now()+updowndouble;
 time_t now2 = time(NULL);
-double timer_s2=now2;
+int timer_s2=now2;
 caff_time0 = timer_s2;
 draw_caff();
 show_status();
@@ -304,7 +301,7 @@ show_status();
 static void select_long_click_handler(ClickRecognizerRef recognizer, void *context) {
 caff_init = caff_now()+centerlong;
 time_t now2 = time(NULL);
-double timer_s2=now2;
+int timer_s2=now2;
 caff_time0 = timer_s2;
 draw_caff();
 show_status();
@@ -313,7 +310,7 @@ show_status();
 static void select_double_click_handler(ClickRecognizerRef recognizer, void *context) {
 caff_init = caff_now()+centerdouble;
 time_t now2 = time(NULL);
-double timer_s2=now2;
+int timer_s2=now2;
 caff_time0 = timer_s2;
 draw_caff();
 show_status();
@@ -326,7 +323,7 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
 caff_init = caff_now()-10;
   if (caff_init<0) caff_init = 0;
 time_t now2 = time(NULL);
-double timer_s2=now2;
+int timer_s2=now2;
 caff_time0 = timer_s2;
 draw_caff();
 show_status();	
@@ -336,7 +333,7 @@ static void down_long_click_handler(ClickRecognizerRef recognizer, void *context
 caff_init = caff_now()-updownlong;
   if (caff_init<0) caff_init = 0;
 time_t now2 = time(NULL);
-double timer_s2=now2;
+int timer_s2=now2;
 caff_time0 = timer_s2;
 draw_caff();
 show_status();	
@@ -346,7 +343,7 @@ static void down_double_click_handler(ClickRecognizerRef recognizer, void *conte
 caff_init = caff_now()-updowndouble;
   if (caff_init<0) caff_init = 0;
 time_t now2 = time(NULL);
-double timer_s2=now2;
+int timer_s2=now2;
 caff_time0 = timer_s2;
 draw_caff();
 show_status();	
@@ -414,8 +411,7 @@ void deinit() {
 		.caff_init = caff_init,
 	};
 	status_t status = persist_write_data(CAFFINIT_PKEY, &state, sizeof(state));
-//	status = persist_caff();
-}
+	}
 
 ///
 /// Initial watchface call
@@ -470,15 +466,10 @@ void init() {
 	app_message_register_inbox_received(in_received_handler);
   
 	// Caffiene text init, then call "draw_caff"
-	//caff_layer = text_layer_create(GRect(49, 105, 46, 30));
-	// below is still clipping text = 400
-	//caff_layer = text_layer_create(GRect(39, 95, 66, 35));
-	// below appears to fix clipping text = 400
 	caff_layer = text_layer_create(GRect(38, 95, 68, 35));
 	text_layer_set_text_color(caff_layer, GColorWhite);
 	text_layer_set_text_alignment(caff_layer, GTextAlignmentCenter);
 	text_layer_set_background_color(caff_layer, GColorClear);
-	//text_layer_set_font(caff_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ROBOTO_CONDENSED_21)));
 	text_layer_set_font(caff_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
     layer_add_child(window_layer, text_layer_get_layer(caff_layer));
 	layer_set_hidden(text_layer_get_layer(caff_layer), hide_caff);
@@ -526,6 +517,10 @@ void init() {
 		caff_time0 = state.caff_time0;
 		caff_init = state.caff_init;
 	}
+// 	else {
+// 	time_t now1 = time(NULL);
+// 	caff_time0 = (int)now1;
+// 	}
 	// Show status screen on init (comment out to have battery and bluetooth status hidden at init)
 	draw_caff();
 	show_status();
