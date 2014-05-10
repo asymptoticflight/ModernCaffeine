@@ -17,7 +17,7 @@
 			"embedded": false,
 			"debug": false,
 			"url" : "http://asymptoticflight.github.io/ModernCaffeine/autoconfig.html",
-			"description": "Customize caffeine content to be registered by each button combination on your Pebble below (e.g., cup of coffee = 95mg, double espresso = 150mg, diet coke = 45mg).",
+			"description": "Customize caffeine content to be registered by each button combination on your Pebble below (e.g., cup of coffee = 95mg, double espresso = 150mg, diet coke = 45mg). Single up or down button presses increment caffeine level by 10mg (up to increase, down to decrease).",
 			"items": [{
 					"name": "updownlong",
 					"title": "Pebble up/down long press (up to increase, down to decrease)",
