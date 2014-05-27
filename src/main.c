@@ -377,7 +377,7 @@ void deinit() {
 	accel_tap_service_unsubscribe();
 	bitmap_layer_destroy(battery_layer);
 	gbitmap_destroy(icon_battery_charging);
-	gbitmap_destroy(icon_battery_10);
+	gbitmap_destroy(icon_battery_100);
 	gbitmap_destroy(icon_battery_90);
 	gbitmap_destroy(icon_battery_80);
 	gbitmap_destroy(icon_battery_70);
@@ -399,7 +399,7 @@ void deinit() {
 	gpath_destroy(hour_hand);
 	gbitmap_destroy(background_image);
   	bitmap_layer_destroy(background_layer);
-	layer_destroy(window_layer);
+// 	layer_destroy(window_layer);
   	window_destroy(window);
     autoconfig_deinit();
   
