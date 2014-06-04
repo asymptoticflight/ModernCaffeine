@@ -4,24 +4,43 @@
 // Include Pebble Autoconfig
 #include "autoconfig.h"
 /////
-// Inserting button configuration
+// Inserting configuration
 /////
 	static int centerlong=150;
 	static int updownlong=100;
 	static int updowndouble=50;
 	static int centerdouble=200;
 	static int halflife=300;
+	// Invert colors
+	static bool blackbg = true;
+	static InverterLayer* inverter_layer;
+	void invert_bg() {
+		layer_set_hidden(inverter_layer_get_layer(inverter_layer), blackbg);
+	}
+	// Hides badge
+	static bool badge = true;
+	static BitmapLayer *badge_layer;
+	static GBitmap *image_badge_window;
+	void hide_badge() {
+		//badge_showing = false;
+		//draw_badge();
+		layer_set_hidden(bitmap_layer_get_layer(badge_layer), !badge);
+	}
 	static void in_received_handler(DictionaryIterator *iter, void *context) {
 			// Let Pebble Autoconfig handle received settings
 			autoconfig_in_received_handler(iter, context);
 
 			// Here the updated settings are available
-			APP_LOG(APP_LOG_LEVEL_DEBUG, "Configuration updated. updownlong: %d updowndouble: %d centerlong: %d centerdouble: %d halflife: %d", (int)getUpdownlong(), (int)getUpdowndouble(), (int)getCenterlong(), (int)getCenterdouble(), (int)getHalflife());   
+			APP_LOG(APP_LOG_LEVEL_DEBUG, "Configuration updated. badge: %d blackbg: %d updownlong: %d updowndouble: %d centerlong: %d centerdouble: %d halflife: %d", (bool)getBadge(), (bool)getBlackbg(), (int)getUpdownlong(), (int)getUpdowndouble(), (int)getCenterlong(), (int)getCenterdouble(), (int)getHalflife()); 
 			updownlong=(int)getUpdownlong();
 			updowndouble=(int)getUpdowndouble();
 			centerlong=(int)getCenterlong();
 			centerdouble=(int)getCenterdouble();
 			halflife=(int)getHalflife();
+			badge=(bool)getBadge();
+			blackbg=(bool)getBlackbg();
+			hide_badge();
+			invert_bg();
 	}
 /////
 
@@ -120,7 +139,7 @@ static AppTimer *vibrate_timer;
 ///
 /// Easy set items for version management (and future settings screen)
 ///
-static bool badge = true;
+// static bool badge = true;
 static bool hide_date = true;
 static bool hide_caff = true;
 
@@ -210,7 +229,7 @@ void show_status() {
 	// Show Date Window & Date
 	layer_set_hidden(text_layer_get_layer(date_layer), false);
 	layer_set_hidden(bitmap_layer_get_layer(date_window_layer), false);
-  // Show Caffeine
+	// Show Caffeine
 	layer_set_hidden(text_layer_get_layer(caff_layer), false);
 	// 4 Sec timer then call "hide_status". Cancels previous timer if another show_status is called within the 4000ms
 	app_timer_cancel(display_timer);
@@ -392,6 +411,8 @@ void deinit() {
 	gbitmap_destroy(icon_bt_disconnected);
 	bitmap_layer_destroy(date_window_layer);
 	gbitmap_destroy(image_date_window);
+	bitmap_layer_destroy(badge_layer);
+	gbitmap_destroy(image_badge_window);
 	text_layer_destroy(date_layer);
     text_layer_destroy(caff_layer);
 	layer_destroy(hands_layer);
@@ -399,6 +420,7 @@ void deinit() {
 	gpath_destroy(hour_hand);
 	gbitmap_destroy(background_image);
   	bitmap_layer_destroy(background_layer);
+  	inverter_layer_destroy(inverter_layer);
 // 	layer_destroy(window_layer);
   	window_destroy(window);
     autoconfig_deinit();
@@ -428,8 +450,9 @@ void init() {
     window_set_click_config_provider(window, click_config_provider);
 	
 	// Background image init and draw
-	if (badge) background_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_BADGE);
-	else background_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_NOBADGE);
+// 	if (badge) background_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_BADGE);
+// 	else background_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_NOBADGE);
+	background_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_NOBADGE);
 	background_layer = bitmap_layer_create(window_bounds);
 	bitmap_layer_set_alignment(background_layer, GAlignCenter);
   	layer_add_child(window_layer, bitmap_layer_get_layer(background_layer));
@@ -445,9 +468,17 @@ void init() {
 	layer_add_child(window_layer, bitmap_layer_get_layer(date_window_layer));
 	bitmap_layer_set_bitmap(date_window_layer, image_date_window);
 	layer_set_hidden(bitmap_layer_get_layer(date_window_layer), hide_date);
+	
+	// Badge init
+	image_badge_window = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BADGE);
+	badge_layer = bitmap_layer_create(GRect(54, 46, 37, 10));
+	layer_add_child(window_layer, bitmap_layer_get_layer(badge_layer));
+	bitmap_layer_set_bitmap(badge_layer, image_badge_window);
+	//layer_set_hidden(bitmap_layer_get_layer(badge_layer), !badge);
+	hide_badge();
 			
 	// Date text init, then call "draw_date"
-	date_layer = text_layer_create(GRect(119, 72, 30, 30));
+	date_layer = text_layer_create(GRect(120, 72, 30, 30));
 	text_layer_set_text_color(date_layer, GColorBlack);
 	text_layer_set_text_alignment(date_layer, GTextAlignmentLeft);
 	text_layer_set_background_color(date_layer, GColorClear);
@@ -460,7 +491,7 @@ void init() {
 	autoconfig_init();
 
 	// Here the restored or defaulted settings are available
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "Configuration updated. updownlong: %d updowndouble: %d centerlong: %d centerdouble: %d halflife: %d", (int)getUpdownlong(), (int)getUpdowndouble(), (int)getCenterlong(), (int)getCenterdouble(), (int)getHalflife());   
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "Configuration updated. badge: %d blackbg: %d updownlong: %d updowndouble: %d centerlong: %d centerdouble: %d halflife: %d", (bool)getBadge(), (bool)getBlackbg(), (int)getUpdownlong(), (int)getUpdowndouble(), (int)getCenterlong(), (int)getCenterdouble(), (int)getHalflife());  
 
 	// Register our custom receive handler which in turn will call Pebble Autoconfigs receive handler
 	app_message_register_inbox_received(in_received_handler);
@@ -508,6 +539,11 @@ void init() {
 	hands_layer = layer_create(window_bounds);
 	layer_add_child(window_layer, hands_layer);
 	layer_set_update_proc(hands_layer, &draw_hands);
+	
+	// Inverter layer init
+	inverter_layer = inverter_layer_create	(window_bounds);
+	layer_add_child(window_layer, inverter_layer_get_layer(inverter_layer));
+	invert_bg();
   
 	/////
 	// Read saved data

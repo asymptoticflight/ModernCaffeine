@@ -1,5 +1,5 @@
 {
-    "versionLabel": "1.0.0",
+    "versionLabel": "1.1.0",
     "uuid": "C406E47C-733E-435B-9008-47A9021724E1",
     "longName": "Modern Caffeine",
     "versionCode": 1,
@@ -11,12 +11,14 @@
 			"updowndouble": 1,
 			"centerlong": 2,
 			"centerdouble": 3,
-			"halflife": 4
+			"halflife": 4,
+			"badge": 5,
+			"blackbg": 6
 	},
 	"preferences": {
 			"embedded": false,
 			"debug": false,
-			"url" : "http://asymptoticflight.github.io/ModernCaffeine/autoconfig.html",
+			"url" : "http://asymptoticflight.github.io/ModernCaffeine/autoconfig101.html",
 			"description": "Customize caffeine content to be registered by each button combination on your Pebble below (e.g., cup of coffee = 95mg, double espresso = 150mg, diet coke = 45mg). Single up or down button presses increment caffeine level by 10mg (up to increase, down to decrease).",
 			"items": [{
 					"name": "updownlong",
@@ -62,6 +64,22 @@
 					"min": 240,
 					"max": 600,
 					"default": 300
+			},
+			{
+					"name": "badge",
+					"title": "Show/hide pebble badge",
+					"type": "boolean",
+					"off-text": "Hide",
+					"on-text": "Show",
+					"default": true
+			},
+			{
+					"name": "blackbg",
+					"title": "Background color",
+					"type": "boolean",
+					"off-text": "White",
+					"on-text": "Black",
+					"default": true
 			}]
 	},
     "shortName": "Modern Caffeine",
@@ -77,15 +95,10 @@
                 "file": "images/bluetooth.png"
             },
             {
-                "type": "png",
-                "name": "IMAGE_BACKGROUND_BADGE",
-                "file": "images/modern_background_new.png"
-            },
-            {
                 "menuIcon": true,
                 "type": "png",
                 "name": "IMAGE_MENU_ICON",
-                "file": "images/modern_logo.png"
+                "file": "images/bean_logo.png"
             },
             {
                 "type": "png",
@@ -161,6 +174,11 @@
                 "type": "png",
                 "name": "IMAGE_BACKGROUND_NOBADGE",
                 "file": "images/modern minimal 3 background no badge.png"
+            },
+            {
+                "type": "png",
+                "name": "IMAGE_BADGE",
+                "file": "images/badge.png"
             }
         ]
     }
