@@ -15,6 +15,7 @@
 	static bool blackbg = true;
 	static InverterLayer* inverter_layer;
 	void invert_bg() {
+		blackbg=(bool)getBlackbg();
 		layer_set_hidden(inverter_layer_get_layer(inverter_layer), blackbg);
 	}
 	// Hides badge
@@ -22,9 +23,16 @@
 	static BitmapLayer *badge_layer;
 	static GBitmap *image_badge_window;
 	void hide_badge() {
-		//badge_showing = false;
-		//draw_badge();
+		badge=(bool)getBadge();
 		layer_set_hidden(bitmap_layer_get_layer(badge_layer), !badge);
+	}
+	// Save settings from autoconfig
+	void load_settings() {
+		updownlong=(int)getUpdownlong();
+		updowndouble=(int)getUpdowndouble();
+		centerlong=(int)getCenterlong();
+		centerdouble=(int)getCenterdouble();
+		halflife=(int)getHalflife();
 	}
 	static void in_received_handler(DictionaryIterator *iter, void *context) {
 			// Let Pebble Autoconfig handle received settings
@@ -32,13 +40,7 @@
 
 			// Here the updated settings are available
 			APP_LOG(APP_LOG_LEVEL_DEBUG, "Configuration updated. badge: %d blackbg: %d updownlong: %d updowndouble: %d centerlong: %d centerdouble: %d halflife: %d", (bool)getBadge(), (bool)getBlackbg(), (int)getUpdownlong(), (int)getUpdowndouble(), (int)getCenterlong(), (int)getCenterdouble(), (int)getHalflife()); 
-			updownlong=(int)getUpdownlong();
-			updowndouble=(int)getUpdowndouble();
-			centerlong=(int)getCenterlong();
-			centerdouble=(int)getCenterdouble();
-			halflife=(int)getHalflife();
-			badge=(bool)getBadge();
-			blackbg=(bool)getBlackbg();
+			load_settings();
 			hide_badge();
 			invert_bg();
 	}
@@ -338,7 +340,6 @@ show_status();
 // ===== DOWN ======
 // SINGLE = 10
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-//caff_init = caff_now(caff_init,caff_time)-10;
 caff_init = caff_now()-10;
   if (caff_init<0) caff_init = 0;
 time_t now2 = time(NULL);
@@ -421,25 +422,33 @@ void deinit() {
 	gbitmap_destroy(background_image);
   	bitmap_layer_destroy(background_layer);
   	inverter_layer_destroy(inverter_layer);
-// 	layer_destroy(window_layer);
   	window_destroy(window);
     autoconfig_deinit();
   
-  /////
-  // Write caffeine state for persistence
-  /////
-  struct CaffState state = (struct CaffState){
+  	/////
+  	// Write caffeine state for persistence
+  	/////
+  	struct CaffState state = (struct CaffState){
 		.caff_time0 = caff_time0,
 		.caff_init = caff_init,
-	};
+		};
 	status_t status = persist_write_data(CAFFINIT_PKEY, &state, sizeof(state));
-	}
+}
 
 ///
 /// Initial watchface call
 ///
 void init() {
 
+	// Initialize Pebble Autoconfig to register App Message handlers and restores settings
+	autoconfig_init();
+
+	// Here the restored or defaulted settings are available
+	//APP_LOG(APP_LOG_LEVEL_DEBUG, "Configuration updated. badge: %d blackbg: %d updownlong: %d updowndouble: %d centerlong: %d centerdouble: %d halflife: %d", (bool)getBadge(), (bool)getBlackbg(), (int)getUpdownlong(), (int)getUpdowndouble(), (int)getCenterlong(), (int)getCenterdouble(), (int)getHalflife());  
+
+	// Register our custom receive handler which in turn will call Pebble Autoconfigs receive handler
+	app_message_register_inbox_received(in_received_handler);
+  
 	// Window init
 	window = window_create();
     window_set_fullscreen(window, true);
@@ -487,15 +496,7 @@ void init() {
 	layer_set_hidden(text_layer_get_layer(date_layer), hide_date);
 	draw_date();
 	
-	// Initialize Pebble Autoconfig to register App Message handlers and restores settings
-	autoconfig_init();
-
-	// Here the restored or defaulted settings are available
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "Configuration updated. badge: %d blackbg: %d updownlong: %d updowndouble: %d centerlong: %d centerdouble: %d halflife: %d", (bool)getBadge(), (bool)getBlackbg(), (int)getUpdownlong(), (int)getUpdowndouble(), (int)getCenterlong(), (int)getCenterdouble(), (int)getHalflife());  
-
-	// Register our custom receive handler which in turn will call Pebble Autoconfigs receive handler
-	app_message_register_inbox_received(in_received_handler);
-  
+	
 	// Caffiene text init, then call "draw_caff"
 	caff_layer = text_layer_create(GRect(38, 95, 68, 35));
 	text_layer_set_text_color(caff_layer, GColorWhite);
@@ -504,7 +505,7 @@ void init() {
 	text_layer_set_font(caff_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
     layer_add_child(window_layer, text_layer_get_layer(caff_layer));
 	layer_set_hidden(text_layer_get_layer(caff_layer), hide_caff);
-	draw_caff();
+	//draw_caff();
 	
 	// Bluetooth icon init, then call "draw_bt_icon" (doesn't call bt_connection_handler to avoid vibrate at init if bluetooth not connected)
 	icon_bt_connected = gbitmap_create_with_resource(RESOURCE_ID_BLUETOOTH_CONNECTED);
@@ -544,7 +545,7 @@ void init() {
 	inverter_layer = inverter_layer_create	(window_bounds);
 	layer_add_child(window_layer, inverter_layer_get_layer(inverter_layer));
 	invert_bg();
-  
+
 	/////
 	// Read saved data
 	/////
@@ -553,6 +554,7 @@ void init() {
 		caff_time0 = state.caff_time0;
 		caff_init = state.caff_init;
 	}
+	load_settings();
 // 	else {
 // 	time_t now1 = time(NULL);
 // 	caff_time0 = (int)now1;
